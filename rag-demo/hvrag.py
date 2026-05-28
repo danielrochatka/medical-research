@@ -156,7 +156,7 @@ def retrieve_and_vote(question: str, top_k: int = TOP_K) -> dict:
     # RRF: score += 1/rank for each Level 1 hit's parent
     rrf: dict[str, float] = defaultdict(float)
     for rank, meta in enumerate(metas, 1):
-        rrf[meta["parent_id"]] += 1.0 / rank
+        rrf[meta["parent_id"]] += 1.0 / (rank + 10)
 
     winner_id = max(rrf, key=rrf.__getitem__)
 
@@ -169,7 +169,7 @@ def retrieve_and_vote(question: str, top_k: int = TOP_K) -> dict:
             "text": docs[i],
             "meta": metas[i],
             "rank": i + 1,
-            "rrf_contrib": 1.0 / (i + 1),
+            "rrf_contrib": 1.0 / (i + 1 + 10),
             "voted_for_winner": metas[i]["parent_id"] == winner_id,
             "parent_rrf_total": rrf[metas[i]["parent_id"]],
         }
