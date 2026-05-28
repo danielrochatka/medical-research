@@ -112,21 +112,16 @@ if ask_clicked and question:
             label_visibility="collapsed",
         )
 
-    # Supporting Level 1 votes
-    st.subheader("Supporting Level 1 Vote Snippets")
-    supporting = result["supporting"]
-    if supporting:
-        for hit in supporting:
-            m = hit["meta"]
-            label = (
-                f"Rank {hit['rank']}  |  RRF contrib {hit['rrf_contrib']:.3f}  |  "
-                f"{m.get('doc_name')} · section {m.get('section_index')} · child {m.get('child_index')}"
-            )
-            with st.expander(label):
-                snippet = hit["text"]
-                st.text(snippet[:500] + ("…" if len(snippet) > 500 else ""))
-    else:
-        st.info(
-            "No Level 1 chunks from the winning section appeared in the top-k results. "
-            "The winner was selected by votes from other sections."
+    # All top-k Level 1 votes
+    st.subheader(f"Level 1 Vote Snippets (top {len(result['supporting'])})")
+    for hit in result["supporting"]:
+        m = hit["meta"]
+        winner_marker = "✦ winner" if hit["voted_for_winner"] else ""
+        label = (
+            f"Rank {hit['rank']}  |  RRF {hit['rrf_contrib']:.3f}  |  "
+            f"{m.get('doc_name')} · section {m.get('section_index')} · child {m.get('child_index')}"
+            + (f"  — {winner_marker}" if winner_marker else "")
         )
+        with st.expander(label, expanded=hit["voted_for_winner"]):
+            snippet = hit["text"]
+            st.text(snippet[:500] + ("…" if len(snippet) > 500 else ""))

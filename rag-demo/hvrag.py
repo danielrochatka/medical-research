@@ -170,9 +170,9 @@ def retrieve_and_vote(question: str, top_k: int = TOP_K) -> dict:
             "meta": metas[i],
             "rank": i + 1,
             "rrf_contrib": 1.0 / (i + 1),
+            "voted_for_winner": metas[i]["parent_id"] == winner_id,
         }
-        for i, m in enumerate(metas)
-        if m["parent_id"] == winner_id
+        for i in range(len(docs))
     ]
 
     return dict(
