@@ -171,6 +171,7 @@ def retrieve_and_vote(question: str, top_k: int = TOP_K) -> dict:
             "rank": i + 1,
             "rrf_contrib": 1.0 / (i + 1),
             "voted_for_winner": metas[i]["parent_id"] == winner_id,
+            "parent_rrf_total": rrf[metas[i]["parent_id"]],
         }
         for i in range(len(docs))
     ]
@@ -190,6 +191,7 @@ class RAGState(TypedDict):
     context: str
     parent_meta: dict
     supporting: list
+    rrf_scores: dict
     answer: str
 
 
@@ -200,6 +202,7 @@ def _retrieve_node(state: RAGState) -> RAGState:
         "context": r["parent_text"],
         "parent_meta": r["parent_meta"],
         "supporting": r["supporting"],
+        "rrf_scores": r["rrf_scores"],
     }
 
 
@@ -245,6 +248,7 @@ def ask(question: str) -> dict:
         "context": "",
         "parent_meta": {},
         "supporting": [],
+        "rrf_scores": {},
         "answer": "",
     })
     return {
@@ -252,4 +256,5 @@ def ask(question: str) -> dict:
         "source_meta": state["parent_meta"],
         "context_text": state["context"],
         "supporting": state["supporting"],
+        "rrf_scores": state["rrf_scores"],
     }

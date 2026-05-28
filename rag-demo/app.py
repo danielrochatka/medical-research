@@ -98,11 +98,14 @@ if ask_clicked and question:
 
     # Cited source
     meta = result["source_meta"]
+    rrf_scores = result["rrf_scores"]
+    winner_id = f"{meta.get('doc_name')}::l0::{meta.get('section_index')}"
+    winner_total = rrf_scores.get(winner_id, 0.0)
     st.subheader("Cited Level 0 Source")
     st.info(
         f"**Document:** {meta.get('doc_name', 'unknown')}  \n"
         f"**Section index:** {meta.get('section_index', '?')}  \n"
-        f"**Chunk ID:** `{meta.get('source', '')} · section {meta.get('section_index', '?')}`"
+        f"**Total RRF score (all child votes):** `{winner_total:.4f}`"
     )
     with st.expander("View full Level 0 context sent to LLM"):
         st.text_area(
@@ -118,7 +121,8 @@ if ask_clicked and question:
         m = hit["meta"]
         winner_marker = "✦ winner" if hit["voted_for_winner"] else ""
         label = (
-            f"Rank {hit['rank']}  |  RRF {hit['rrf_contrib']:.3f}  |  "
+            f"Rank {hit['rank']}  |  contrib {hit['rrf_contrib']:.3f}  "
+            f"|  section total {hit['parent_rrf_total']:.3f}  |  "
             f"{m.get('doc_name')} · section {m.get('section_index')} · child {m.get('child_index')}"
             + (f"  — {winner_marker}" if winner_marker else "")
         )
